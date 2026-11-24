@@ -1,0 +1,19 @@
+{
+  "name": "my-agent",
+  "version": "1.0.0",
+  "description": "Local AI Agent",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "dotenv": "^18.0.10",
+    "openai": "^5.23.2"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
