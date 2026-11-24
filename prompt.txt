@@ -1,0 +1,26 @@
+[
+  {
+    "role": "system",
+    "content": "Do not include any reasoning, chain-of-thought, or <think> tags. Return ONLY tool calls when appropriate, or the direct final response without extra explanation."
+  },
+  {
+    "role": "user",
+    "content": "Hi youngmqn"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! How can I help you today?"
+  },
+  {
+    "role": "user",
+    "content": "have any tools in your sys"
+  },
+  {
+    "role": "assistant",
+    "content": "Yes, I have access to tools for searching Microsoft/Azure documentation, retrieving code samples, and fetching full documentation pages. I can help with technical queries, docs, and coding examples related to Azure and Microsoft services. What do you need help with?"
+  },
+  {
+    "role": "user",
+    "content": "search latest ms docs"
+  }
+]

@@ -2,38 +2,40 @@ require('dotenv').config();
 const OpenAI = require('openai');
 const readline = require('node:readline/promises');
 const { stdin: input, stdout: output } = require('node:process');
-let fs=require('node:fs')
-let tools=require('./tools.js')
-let Logger=require('./logger.js')
-let {connectMicrosoftLearn,
+const fs = require('node:fs');
+
+const Logger = require('./logger.js');
+const {
+  connectMicrosoftLearn,
   callMicrosoftTool,
-  disconnectMicrosoftLearn}=require('./mcp.js')
+  disconnectMicrosoftLearn,
+} = require('./mcp.js');
 
-
-//let tool=fs.readFileSync('./tools.js','utf-8')
-
-//console.log(tools)
 const SYSTEM_PROMPT =
-  "Do not include any reasoning, chain-of-thought, or <think> tags. " +
-  "Return ONLY tool calls when appropriate, or the direct final response without extra explanation.";
+  'Do not include any reasoning, chain-of-thought, or <think> tags. ' +
+  'Return ONLY tool calls when appropriate, or the direct final response without extra explanation.';
 
-
-function schmaMake(mcpTools=[]){
-
-const tools = mcpTools.map((t) => ({
-    type: "function",
+function schemaMake(mcpTools = []) {
+  if (!Array.isArray(mcpTools)) return [];
+  return mcpTools.map((t) => ({
+    type: 'function',
     function: {
       name: t.name,
       description: t.description || `Microsoft Learn tool: ${t.name}`,
-      parameters: t.inputSchema || { type: "object", properties: {} },
+      parameters: t.inputSchema || { type: 'object', properties: {} },
     },
-}))
-
-return tools;
+  }));
 }
 
-
-
+function parseArguments(rawArgs) {
+  if (!rawArgs) return {};
+  if (typeof rawArgs === 'object') return rawArgs;
+  try {
+    return JSON.parse(rawArgs);
+  } catch {
+    return { _raw: rawArgs };
+  }
+}
 
 const openai = new OpenAI({
   baseURL: process.env.BASE_URL,
@@ -42,92 +44,109 @@ const openai = new OpenAI({
 
 const MODEL = process.env.MODEL;
 
-const msg = [
-  { role: 'system', content: SYSTEM_PROMPT },
-];
+const msg = [{ role: 'system', content: SYSTEM_PROMPT }];
+const rl = readline.createInterface({ input, output });
 
-async function run(messages) {
+async function executeTool(name, rawArgs) {
+  const parsedArgs = parseArguments(rawArgs);
+  return await callMicrosoftTool({ name, arguments: parsedArgs });
+}
+
+async function toolsCall(assistantMessage, tools) {
+  for (const call of assistantMessage.tool_calls) {
+    const fnName = call.function?.name;
+    const rawArgs = call.function?.arguments;
+    const parsedArgs = parseArguments(rawArgs);
+
+    console.log('---------------------------------------------');
+    console.log(`Tool name : ${fnName} | arguments : ${JSON.stringify(parsedArgs)}`);
+    console.log('---------------------------------------------');
+
+    try {
+      const result = await executeTool(fnName, parsedArgs);
+      const resContent = JSON.stringify(result?.content ?? result ?? { ok: true }, null, 2);
+
+      msg.push({
+        role: 'tool',
+        tool_call_id: call.id,
+        content: resContent,
+      });
+    } catch (err) {
+      console.error(`Tool execution failed (${fnName}):`, err.message || err);
+      msg.push({
+        role: 'tool',
+        tool_call_id: call.id,
+        content: JSON.stringify({ error: err.message || String(err) }),
+      });
+    }
+  }
+
+  await run(msg, tools);
+}
+
+async function run(messages, tools) {
   try {
     const completion = await openai.chat.completions.create({
       model: MODEL,
       messages,
-     tools,
+      tools,
+      tool_choice: tools && tools.length > 0 ? 'auto' : undefined,
     });
 
-    const reply = completion.choices[0].message.content;
-  console.log(`\nAI: ${reply}\n`);
- if(completion.choices[0].message.tool_calls){
-toolsCall(completion.choices[0].message)
-}
-   msg.push({ role: 'assistant', content: reply });
- 
- } catch (error) {
+    const assistantMsg = completion.choices?.[0]?.message;
+    if (!assistantMsg) {
+      console.log('\nAI: (empty response)\n');
+      return;
+    }
+
+    if (Array.isArray(assistantMsg.tool_calls) && assistantMsg.tool_calls.length > 0) {
+      msg.push({
+        role: 'assistant',
+        content: assistantMsg.content ?? null,
+        tool_calls: assistantMsg.tool_calls,
+      });
+      await toolsCall(assistantMsg, tools);
+    } else {
+      const reply = assistantMsg.content ?? '';
+      msg.push({ role: 'assistant', content: reply });
+      console.log(`\nAI: ${reply}\n`);
+    }
+  } catch (error) {
     console.error('\nError communicating with AI:', error.message, '\n');
   }
 }
 
-const rl = readline.createInterface({ input, output });
-let abailableTools = ['microsoft_docs_search', 'microsoft_code_sample_search', 'microsoft_docs_fetch']
+async function getUserInput(tools = []) {
+  while (true) {
+    const prompt = await rl.question('Enter your prompt:> ');
 
+    if (!prompt.trim() || prompt.trim().toLowerCase() === 'q') {
+      if (typeof disconnectMicrosoftLearn === 'function') {
+        await disconnectMicrosoftLearn();
+      }
+      rl.close();
+      console.log('\nprogram exit !!');
+      break;
+    }
 
-
-async function executeTool(name,arg){
-let res=await callMicrosoftTool({name,arguments:arg})
-}
-
-
-async function toolsCall(func){
-for(let call of func.tool_calls){
-
-if(abailableTools.includes(call.function.name)){
-Logger.tool(call.function.name,call.function.argument)
-let result=await executeTool(call.function.name,call.function.argument)
-
-let res=JSON.stringify(result.content, null, 2)
-msg.push({role:'tool',content:res})
-}
-
-console.log("---------------------------------------------")
-Logger.tool(call.function.name,call.function.argument)
-console.log("---------------------------------------------")
-
-}
-run(msg)
-}
-
-//toolsCall()
-
-
-
-async function getUserInput() {
-  const prompt = await rl.question('Enter your prompt:> ');
-
-  if (prompt !== "" && prompt.trim().toLowerCase() !== 'q') {
     console.log('wait...');
     msg.push({ role: 'user', content: prompt });
+    fs.writeFileSync('./prompt.txt', JSON.stringify(msg, null, 2));
 
-    await run(msg);
-    getUserInput();
-  } else {
-disconnectMicrosoftLearn();
-    rl.close();
-    console.log('\nprogram exit !!');
+    await run(msg, tools);
   }
 }
 
-//getUserInput();
+async function start() {
+  let ms = [];
+  try {
+    ms = await connectMicrosoftLearn();
+  } catch (err) {
+    console.warn('MCP connection skipped/failed:', err.message || err);
+  }
 
-
-async function start(){
-let ms=await connectMicrosoftLearn()
-//Logger.log(ms)
-
-let mcpTools=schmaMake(ms)
-tools=[...tools,...mcpTools]
-
-//Logger.log(tools)
-getUserInput();
-
+  const tools = schemaMake(ms);
+  await getUserInput(tools);
 }
 
-start()
+start();
