@@ -2,3 +2,5 @@
 node_modules/
 prompt.txt
 agent.log
+tools.js
+
