@@ -1,6 +1,5 @@
-.env
 node_modules/
-prompt.txt
-agent.log
+.env
 tools.js
+prompt.txt
 

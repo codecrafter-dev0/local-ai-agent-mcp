@@ -1,0 +1,109 @@
+ℹ️ [INFO] [14:57:46.410] Starting local AI agent...
+ℹ️ [INFO] [14:57:46.417] Connecting to Microsoft Learn MCP... https://learn.microsoft.com/api/mcp
+❌ [ERROR] [14:57:48.200] Microsoft Learn MCP connection failed: fetch failed
+TypeError: fetch failed
+    at node:internal/deps/undici/undici:14130:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async StreamableHTTPClientTransport.send (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/streamableHttp.js:324:30)
+    at async Client.notification (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/shared/protocol.js:911:9)
+    at async Client.connect (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/index.js:307:13)
+    at async connectMicrosoftLearn (/root/my-agent/mcp.js:44:5)
+    at async start (/root/my-agent/index.js:210:16)
+ℹ️ [INFO] [14:57:48.208] Loaded 0 tool schema(s).
+ℹ️ [INFO] [14:58:18.040] Program exited cleanly.
+ℹ️ [INFO] [15:00:44.214] Starting local AI agent...
+ℹ️ [INFO] [15:00:44.220] Connecting to Microsoft Learn MCP... https://learn.microsoft.com/api/mcp
+❌ [ERROR] [15:00:56.703] Microsoft Learn MCP connection failed: fetch failed
+TypeError: fetch failed
+    at node:internal/deps/undici/undici:14130:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async StreamableHTTPClientTransport.send (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/streamableHttp.js:324:30)
+    at async Client.notification (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/shared/protocol.js:911:9)
+    at async Client.connect (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/index.js:307:13)
+    at async connectMicrosoftLearn (/root/my-agent/mcp.js:44:5)
+    at async start (/root/my-agent/index.js:210:16)
+ℹ️ [INFO] [15:00:56.708] Loaded 0 tool schema(s).
+ℹ️ [INFO] [15:05:14.653] Program exited cleanly.
+ℹ️ [INFO] [15:14:57.276] Starting local AI agent...
+ℹ️ [INFO] [15:14:57.282] Connecting to Microsoft Learn MCP... https://learn.microsoft.com/api/mcp
+ℹ️ [INFO] [15:15:00.232] Microsoft Learn MCP connected
+ℹ️ [INFO] [15:15:02.224] Microsoft Learn tools discovered: [
+  "microsoft_docs_search",
+  "microsoft_code_sample_search",
+  "microsoft_docs_fetch"
+]
+ℹ️ [INFO] [15:15:02.226] Loaded 3 tool schema(s).
+ℹ️ [INFO] [15:15:37.779] Chosen tool: microsoft_docs_search {
+  "query": "Hibro"
+}
+[TOOL] [15:15:37.782] Executing: microsoft_docs_search | args: {"query":"Hibro"}
+❌ [ERROR] [15:15:48.287] Microsoft MCP tool failed: {
+  "name": "microsoft_docs_search",
+  "durationMs": 10502,
+  "error": "fetch failed"
+}
+❌ [ERROR] [15:15:48.290] Tool execution failed (microsoft_docs_search): fetch failed
+TypeError: fetch failed
+    at node:internal/deps/undici/undici:14130:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async StreamableHTTPClientTransport.send (/root/my-agent/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/streamableHttp.js:324:30)
+❌ [ERROR] [15:16:56.489] Error communicating with AI: Request timed out.
+Error: Request timed out.
+    at OpenAI.makeRequest (/root/my-agent/node_modules/openai/client.js:293:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async run (/root/my-agent/index.js:149:24)
+    at async getUserInput (/root/my-agent/index.js:201:5)
+    at async start (/root/my-agent/index.js:218:3)
+ℹ️ [INFO] [15:17:57.009] Chosen tool: microsoft_docs_search {
+  "query": "azure latest update"
+}
+[TOOL] [15:17:57.011] Executing: microsoft_docs_search | args: {"query":"azure latest update"}
+ℹ️ [INFO] [15:17:58.488] Microsoft MCP tool completed: {
+  "name": "microsoft_docs_search",
+  "durationMs": 1475
+}
+ℹ️ [INFO] [15:21:35.755] Chosen tool: microsoft_docs_search {
+  "query": "Azure Blob Storage SAS token Node.js"
+}
+[TOOL] [15:21:35.763] Executing: microsoft_docs_search | args: {"query":"Azure Blob Storage SAS token Node.js"}
+ℹ️ [INFO] [15:21:37.704] Microsoft MCP tool completed: {
+  "name": "microsoft_docs_search",
+  "durationMs": 1939
+}
+ℹ️ [INFO] [15:21:40.043] Chosen tool: microsoft_docs_fetch {
+  "url": "https://learn.microsoft.com/azure/storage/blobs/storage-blob-account-delegation-sas-create-javascript"
+}
+[TOOL] [15:21:40.045] Executing: microsoft_docs_fetch | args: {"url":"https://learn.microsoft.com/azure/storage/blobs/storage-blob-account-delegation-sas-create-javascript"}
+ℹ️ [INFO] [15:21:40.822] Microsoft MCP tool completed: {
+  "name": "microsoft_docs_fetch",
+  "durationMs": 775
+}
+ℹ️ [INFO] [15:21:42.914] Chosen tool: microsoft_code_sample_search {
+  "query": "upload blob SAS token Node.js",
+  "language": "javascript"
+}
+[TOOL] [15:21:42.916] Executing: microsoft_code_sample_search | args: {"query":"upload blob SAS token Node.js","language":"javascript"}
+ℹ️ [INFO] [15:21:44.313] Microsoft MCP tool completed: {
+  "name": "microsoft_code_sample_search",
+  "durationMs": 1396
+}
+❌ [ERROR] [15:25:01.362] Error communicating with AI: 429 Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit
+Error: 429 Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit
+    at APIError.generate (/root/my-agent/node_modules/openai/core/error.js:63:20)
+    at OpenAI.makeStatusError (/root/my-agent/node_modules/openai/client.js:163:32)
+    at OpenAI.makeRequest (/root/my-agent/node_modules/openai/client.js:331:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async run (/root/my-agent/index.js:149:24)
+    at async getUserInput (/root/my-agent/index.js:201:5)
+    at async start (/root/my-agent/index.js:218:3)
+❌ [ERROR] [15:25:31.881] Error communicating with AI: 429 Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit
+Error: 429 Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit
+    at APIError.generate (/root/my-agent/node_modules/openai/core/error.js:63:20)
+    at OpenAI.makeStatusError (/root/my-agent/node_modules/openai/client.js:163:32)
+    at OpenAI.makeRequest (/root/my-agent/node_modules/openai/client.js:331:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async run (/root/my-agent/index.js:149:24)
+    at async getUserInput (/root/my-agent/index.js:201:5)
+    at async start (/root/my-agent/index.js:218:3)
+ℹ️ [INFO] [15:27:54.179] Microsoft Learn MCP disconnected
+ℹ️ [INFO] [15:27:54.192] Program exited cleanly.
